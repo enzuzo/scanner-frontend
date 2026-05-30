@@ -13,29 +13,31 @@ export default function ScanForm() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>({ type: "idle" });
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
     setStatus({ type: "loading" });
 
     const params = new URLSearchParams({ url, email });
 
-    try {
-      const res = await fetch(`/api/scan?${params}`);
-      if (res.ok) {
-        setStatus({ type: "success", email });
-      } else {
-        const body = await res.text().catch(() => "");
+    setStatus({ type: "success", email });
+
+    fetch(`/api/scan?${params}`)
+      .then((res) => {
+        if (!res.ok) {
+          res.text().then((body) =>
+            setStatus({
+              type: "error",
+              message: `Scan request failed (${res.status})${body ? ": " + body : ""}`,
+            })
+          );
+        }
+      })
+      .catch((err) => {
         setStatus({
           type: "error",
-          message: `Server returned ${res.status}${body ? ": " + body : ""}`,
+          message: `Could not reach scanner — is it running? (${err.message})`,
         });
-      }
-    } catch (err) {
-      setStatus({
-        type: "error",
-        message: `Could not reach scanner proxy — is it running? (${(err as Error).message})`,
       });
-    }
   }
 
   const loading = status.type === "loading";
