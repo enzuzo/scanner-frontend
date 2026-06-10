@@ -17,7 +17,8 @@ export default function ScanForm() {
     e.preventDefault();
     setStatus({ type: "loading" });
 
-    const params = new URLSearchParams({ url, email });
+    const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+    const params = new URLSearchParams({ url: normalizedUrl, email });
 
     setStatus({ type: "success", email });
 
@@ -50,7 +51,7 @@ export default function ScanForm() {
         </label>
         <input
           id="url"
-          type="url"
+          type="text"
           required
           placeholder="https://example.com"
           value={url}
