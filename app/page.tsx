@@ -36,6 +36,8 @@ export default function Home() {
         >
           Enzuzo
         </a>
+        {" · "}
+        <span style={{ color: "#cccccc" }}>{process.env.NEXT_PUBLIC_COMMIT_HASH}</span>
       </p>
     </div>
   );

@@ -83,6 +83,7 @@ gcp-repo:
 ## Build production image for linux/amd64 tagged for GAR (usage: make build-prod IMAGE_TAG=v1.2.3)
 build-prod:
 	docker build --platform linux/amd64 --provenance=false \
+		--build-arg COMMIT_HASH=$(shell git rev-parse --short HEAD) \
 		-t $(GAR_PATH) .
 
 ## Push image to Google Artifact Registry

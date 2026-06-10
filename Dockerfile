@@ -7,6 +7,8 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+ARG COMMIT_HASH=dev
+ENV NEXT_PUBLIC_COMMIT_HASH=$COMMIT_HASH
 RUN npm run build
 
 FROM node:20-alpine AS runner
