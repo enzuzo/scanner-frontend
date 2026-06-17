@@ -8,10 +8,22 @@ type Status =
   | { type: "success"; email: string }
   | { type: "error"; message: string };
 
+const REGIONS = [
+  { id: "california", label: "California" },
+  { id: "florida", label: "Florida" },
+];
+
 export default function ScanForm() {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
+  const [regions, setRegions] = useState<string[]>([]);
   const [status, setStatus] = useState<Status>({ type: "idle" });
+
+  function toggleRegion(id: string) {
+    setRegions((prev) =>
+      prev.includes(id) ? prev.filter((r) => r !== id) : [...prev, id]
+    );
+  }
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -19,6 +31,7 @@ export default function ScanForm() {
 
     const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
     const params = new URLSearchParams({ url: normalizedUrl, email });
+    regions.forEach((r) => params.append("regions", r));
 
     setStatus({ type: "success", email });
 
@@ -73,6 +86,47 @@ export default function ScanForm() {
           onChange={(e) => setEmail(e.target.value)}
           className="rounded-lg px-3 py-2.5 text-sm outline-none bg-white/10 text-white placeholder:text-white/30 border border-white/20 focus:border-[#23DC64] transition"
         />
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
+          Regions
+        </span>
+        <div className="flex flex-col gap-2">
+          {REGIONS.map((region) => {
+            const checked = regions.includes(region.id);
+            return (
+              <div
+                key={region.id}
+                role="checkbox"
+                aria-checked={checked}
+                tabIndex={0}
+                onClick={() => toggleRegion(region.id)}
+                onKeyDown={(e) => (e.key === " " || e.key === "Enter") && toggleRegion(region.id)}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 cursor-pointer border transition select-none"
+                style={{
+                  background: checked ? "rgba(35,220,100,0.12)" : "rgba(255,255,255,0.05)",
+                  borderColor: checked ? "#23DC64" : "rgba(255,255,255,0.2)",
+                }}
+              >
+                <span
+                  className="flex items-center justify-center w-4 h-4 rounded flex-shrink-0 border transition"
+                  style={{
+                    background: checked ? "#23DC64" : "transparent",
+                    borderColor: checked ? "#23DC64" : "rgba(255,255,255,0.4)",
+                  }}
+                >
+                  {checked && (
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4l2.5 2.5L9 1" stroke="#002F2F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </span>
+                <span className="text-sm text-white">{region.label}</span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <button
