@@ -38,10 +38,10 @@ export default function ScanForm() {
     fetch(`/api/scan?${params}`)
       .then((res) => {
         if (!res.ok) {
-          res.text().then((body) =>
+          res.text().then(() =>
             setStatus({
               type: "error",
-              message: `Scan request failed (${res.status})${body ? ": " + body : ""}`,
+              message: `Scan request failed (${res.status}). Please try again or contact support.`,
             })
           );
         }
