@@ -11,13 +11,6 @@ export default function Home() {
         >
           Website Compliance Scanner
         </h1>
-        <p
-          className="text-sm mb-8"
-          style={{ color: "rgba(255,255,255,0.6)", fontFamily: "var(--font-inter)" }}
-        >
-          Enter a URL and your email to receive the scan results.
-        </p>
-
         <ScanForm />
       </div>
 
