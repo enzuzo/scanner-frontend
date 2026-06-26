@@ -56,8 +56,33 @@ export default function ScanForm() {
 
   const loading = status.type === "loading";
 
+  if (status.type === "success") {
+    return (
+      <div className="flex flex-col items-center gap-4 py-6 text-center" style={{ fontFamily: "var(--font-inter)" }}>
+        <span
+          className="flex items-center justify-center w-12 h-12 rounded-full"
+          style={{ background: "rgba(35,220,100,0.15)" }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 13l4 4L19 7" stroke="#23DC64" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </span>
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-semibold text-white">Scan started</p>
+          <p className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Your results will be sent to{" "}
+            <span className="font-medium" style={{ color: "#23DC64" }}>{status.email}</span>.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" style={{ fontFamily: "var(--font-inter)" }}>
+      <p className="text-sm -mt-2 mb-2" style={{ color: "rgba(255,255,255,0.6)" }}>
+        Enter a URL and your email to receive the scan results.
+      </p>
       <div className="flex flex-col gap-1.5">
         <label htmlFor="url" className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
           Website URL
@@ -137,12 +162,6 @@ export default function ScanForm() {
       >
         {loading ? "Starting scan…" : "Start scan"}
       </button>
-
-      {status.type === "success" && (
-        <p className="rounded-lg px-4 py-3 text-sm" style={{ background: "rgba(35,220,100,0.15)", color: "#23DC64" }}>
-          Scan started — results will be sent to <strong>{status.email}</strong>.
-        </p>
-      )}
 
       {status.type === "error" && (
         <p className="rounded-lg px-4 py-3 text-sm" style={{ background: "rgba(255,100,100,0.15)", color: "#ff6b6b" }}>
