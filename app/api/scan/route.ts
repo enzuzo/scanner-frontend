@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
 
   const proxyParams: Record<string, string> = { url };
   if (email) proxyParams.email = email;
+  if (searchParams.get("skipBannerInteraction") === "true") proxyParams.skipBannerInteraction = "true";
   const params = new URLSearchParams(proxyParams);
   searchParams.getAll("regions").forEach((r) => params.append("regions", r));
   const upstream = `${PROXY_BASE}/scan?${params}`;

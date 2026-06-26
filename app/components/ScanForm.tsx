@@ -17,6 +17,7 @@ export default function ScanForm() {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
   const [regions, setRegions] = useState<string[]>([]);
+  const [skipBannerInteraction, setSkipBannerInteraction] = useState(false);
   const [status, setStatus] = useState<Status>({ type: "idle" });
 
   function toggleRegion(id: string) {
@@ -32,6 +33,7 @@ export default function ScanForm() {
     const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
     const params = new URLSearchParams({ url: normalizedUrl, email });
     regions.forEach((r) => params.append("regions", r));
+    if (skipBannerInteraction) params.set("skipBannerInteraction", "true");
 
     setStatus({ type: "success", email });
 
@@ -151,6 +153,39 @@ export default function ScanForm() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+        <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
+          Options
+        </span>
+        <div
+          role="checkbox"
+          aria-checked={skipBannerInteraction}
+          tabIndex={0}
+          onClick={() => setSkipBannerInteraction((v) => !v)}
+          onKeyDown={(e) => (e.key === " " || e.key === "Enter") && setSkipBannerInteraction((v) => !v)}
+          className="flex items-center gap-3 rounded-lg px-3 py-2.5 cursor-pointer border transition select-none"
+          style={{
+            background: skipBannerInteraction ? "rgba(35,220,100,0.12)" : "rgba(255,255,255,0.05)",
+            borderColor: skipBannerInteraction ? "#23DC64" : "rgba(255,255,255,0.2)",
+          }}
+        >
+          <span
+            className="flex items-center justify-center w-4 h-4 rounded flex-shrink-0 border transition"
+            style={{
+              background: skipBannerInteraction ? "#23DC64" : "transparent",
+              borderColor: skipBannerInteraction ? "#23DC64" : "rgba(255,255,255,0.4)",
+            }}
+          >
+            {skipBannerInteraction && (
+              <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                <path d="M1 4l2.5 2.5L9 1" stroke="#002F2F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </span>
+          <span className="text-sm text-white">Don't interact with cookie banner</span>
         </div>
       </div>
 
