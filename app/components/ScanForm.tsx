@@ -133,7 +133,7 @@ export default function ScanForm() {
           onChange={(e) => {
             const val = e.target.value;
             setEmail(val);
-            setEmailSpaceWarning(val.includes(" "));
+            setEmailSpaceWarning(val.replace(/,\s*/g, ",").includes(" "));
           }}
           className="rounded-lg px-3 py-2.5 text-sm outline-none bg-white/10 text-white placeholder:text-white/30 border border-white/20 focus:border-[#23DC64] transition"
         />
