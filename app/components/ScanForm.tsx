@@ -13,9 +13,16 @@ const REGIONS = [
   { id: "florida", label: "Florida" },
 ];
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function parseEmails(raw: string): string[] {
+  return raw.split(",").map((e) => e.trim()).filter(Boolean);
+}
+
 export default function ScanForm() {
   const [url, setUrl] = useState("");
   const [email, setEmail] = useState("");
+  const [emailSpaceWarning, setEmailSpaceWarning] = useState(false);
   const [regions, setRegions] = useState<string[]>([]);
   const [skipBannerInteraction, setSkipBannerInteraction] = useState(false);
   const [status, setStatus] = useState<Status>({ type: "idle" });
@@ -28,14 +35,27 @@ export default function ScanForm() {
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    const emails = parseEmails(email);
+    const invalidEmails = emails.filter((e) => !EMAIL_RE.test(e));
+    if (!emails.length || invalidEmails.length) {
+      setStatus({
+        type: "error",
+        message: invalidEmails.length
+          ? `Invalid email address${invalidEmails.length > 1 ? "es" : ""}: ${invalidEmails.join(", ")}`
+          : "Please enter at least one email address.",
+      });
+      return;
+    }
+
     setStatus({ type: "loading" });
 
     const normalizedUrl = /^https?:\/\//i.test(url) ? url : `https://${url}`;
-    const params = new URLSearchParams({ url: normalizedUrl, email });
+    const params = new URLSearchParams({ url: normalizedUrl, email: emails.join(",") });
     regions.forEach((r) => params.append("regions", r));
     if (skipBannerInteraction) params.set("skipBannerInteraction", "true");
 
-    setStatus({ type: "success", email });
+    setStatus({ type: "success", email: emails.join(", ") });
 
     fetch(`/api/scan?${params}`)
       .then((res) => {
@@ -102,17 +122,26 @@ export default function ScanForm() {
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="email" className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Email address
+          Recipient email address(es)
         </label>
         <input
           id="email"
-          type="email"
+          type="text"
           required
-          placeholder="you@example.com"
+          placeholder="john@doe.com, foo@bar.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setEmail(val);
+            setEmailSpaceWarning(val.includes(" "));
+          }}
           className="rounded-lg px-3 py-2.5 text-sm outline-none bg-white/10 text-white placeholder:text-white/30 border border-white/20 focus:border-[#23DC64] transition"
         />
+        {emailSpaceWarning && (
+          <p className="text-xs" style={{ color: "#f59e0b" }}>
+            Use commas to separate multiple email addresses, not spaces.
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">
