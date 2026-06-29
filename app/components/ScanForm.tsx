@@ -34,7 +34,7 @@ export default function ScanForm() {
     e.preventDefault();
 
     const emails = parseEmails(email);
-    const invalidEmails = emails.filter((e) => !EMAIL_RE.test(e));
+    const invalidEmails = emails.filter((addr) => !EMAIL_RE.test(addr));
     if (!emails.length || invalidEmails.length) {
       setStatus({
         type: "error",
