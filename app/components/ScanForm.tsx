@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { parseEmails, hasSpaceSeparator } from "../lib/email-utils";
 
 type Status =
   | { type: "idle" }
@@ -14,10 +15,6 @@ const REGIONS = [
 ];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function parseEmails(raw: string): string[] {
-  return raw.split(",").map((e) => e.trim()).filter(Boolean);
-}
 
 export default function ScanForm() {
   const [url, setUrl] = useState("");
@@ -133,7 +130,7 @@ export default function ScanForm() {
           onChange={(e) => {
             const val = e.target.value;
             setEmail(val);
-            setEmailSpaceWarning(val.replace(/,\s*/g, ",").includes(" "));
+            setEmailSpaceWarning(hasSpaceSeparator(val));
           }}
           className="rounded-lg px-3 py-2.5 text-sm outline-none bg-white/10 text-white placeholder:text-white/30 border border-white/20 focus:border-[#23DC64] transition"
         />
