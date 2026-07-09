@@ -4,8 +4,8 @@ NETWORK       := scanner-net
 PROXY_URL     ?= http://8.231.192.24:3000
 PROXY_TOKEN   ?= mysecret
 
-GCP_PROJECT   ?= enzuzo-eng
-GCP_REGION    ?= us-central1
+GCP_PROJECT   ?= enzuzo-prod-001
+GCP_REGION    ?= us-east4
 GAR_REPO      ?= scanner
 GAR_IMAGE     ?= frontend
 IMAGE_TAG     ?= latest
@@ -14,7 +14,7 @@ GAR_PATH       = $(GCP_REGION)-docker.pkg.dev/$(GCP_PROJECT)/$(GAR_REPO)/$(GAR_I
 CLOUD_RUN_SVC := scanner-frontend
 
 .PHONY: install dev build start lint docker-build docker-run docker-stop network clean \
-        auth-gar build-prod push build-push gcp-repo gcp-deploy gcp-open gcp-iam help
+        auth-gar build-prod push build-push deploy gcp-repo gcp-deploy gcp-open gcp-iam logs help
 
 ## Install dependencies
 install:
@@ -92,6 +92,19 @@ push:
 
 ## Build and push to Google Artifact Registry
 build-push: build-prod push
+
+## Build, push, and deploy to Cloud Run
+deploy: build-prod push
+	gcloud run deploy $(CLOUD_RUN_SVC) \
+		--image $(GAR_PATH) \
+		--region $(GCP_REGION) \
+		--project $(GCP_PROJECT)
+
+## Tail logs from Cloud Run
+logs:
+	gcloud beta run services logs tail $(CLOUD_RUN_SVC) \
+		--region=$(GCP_REGION) \
+		--project=$(GCP_PROJECT)
 
 ## Deploy to Cloud Run
 gcp-deploy:
