@@ -5,7 +5,7 @@ PROXY_URL     ?= http://8.231.192.24:3000
 PROXY_TOKEN   ?= mysecret
 
 GCP_PROJECT   ?= enzuzo-prod-001
-GCP_REGION    ?= us-central1
+GCP_REGION    ?= us-east4
 GAR_REPO      ?= scanner
 GAR_IMAGE     ?= frontend
 IMAGE_TAG     ?= latest
