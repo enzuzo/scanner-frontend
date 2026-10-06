@@ -57,12 +57,17 @@ export default function ScanForm() {
     fetch(`/api/scan?${params}`)
       .then((res) => {
         if (!res.ok) {
-          res.text().then(() =>
-            setStatus({
-              type: "error",
-              message: `Scan request failed (${res.status}). Please try again or contact support.`,
-            })
-          );
+          res
+            .json()
+            .catch(() => null)
+            .then((body) =>
+              setStatus({
+                type: "error",
+                message:
+                  body?.error ||
+                  `Scan request failed (${res.status}). Please try again or contact support.`,
+              })
+            );
         }
       })
       .catch((err) => {
