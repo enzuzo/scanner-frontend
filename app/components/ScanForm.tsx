@@ -14,11 +14,6 @@ const REGIONS = [
   { id: "florida", label: "Florida" },
 ];
 
-const BROWSER_DRIVERS = [
-  { id: "playwright", label: "Playwright (default)" },
-  { id: "patchright", label: "Patchright (experimental)" },
-];
-
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ScanForm() {
@@ -27,7 +22,6 @@ export default function ScanForm() {
   const [emailSpaceWarning, setEmailSpaceWarning] = useState(false);
   const [regions, setRegions] = useState<string[]>([]);
   const [skipBannerInteraction, setSkipBannerInteraction] = useState(false);
-  const [browserDriver, setBrowserDriver] = useState("playwright");
   const [status, setStatus] = useState<Status>({ type: "idle" });
 
   function toggleRegion(id: string) {
@@ -57,7 +51,6 @@ export default function ScanForm() {
     const params = new URLSearchParams({ url: normalizedUrl, email: emails.join(",") });
     regions.forEach((r) => params.append("regions", r));
     if (skipBannerInteraction) params.set("skipBannerInteraction", "true");
-    if (browserDriver !== "playwright") params.set("browserDriver", browserDriver);
 
     setStatus({ type: "success", email: emails.join(", ") });
 
@@ -220,24 +213,6 @@ export default function ScanForm() {
           </span>
           <span className="text-sm text-white">Don't interact with cookie banner</span>
         </div>
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="browserDriver" className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.7)" }}>
-          Browser driver
-        </label>
-        <select
-          id="browserDriver"
-          value={browserDriver}
-          onChange={(e) => setBrowserDriver(e.target.value)}
-          className="rounded-lg px-3 py-2.5 text-sm outline-none bg-white/10 text-white border border-white/20 focus:border-[#23DC64] transition"
-        >
-          {BROWSER_DRIVERS.map((driver) => (
-            <option key={driver.id} value={driver.id} style={{ color: "#002F2F" }}>
-              {driver.label}
-            </option>
-          ))}
-        </select>
       </div>
 
       <button
